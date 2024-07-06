@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.IO;
+using AnotherFileBrowser.Windows;
 
 public class EditorManager : MonoBehaviour
 {
@@ -55,11 +56,16 @@ public class EditorManager : MonoBehaviour
     void Save() {
         SerializableList<RoundManager.EnemyInfo> r = new SerializableList<RoundManager.EnemyInfo>();
         r.list = round;
-        var path = EditorUtility.SaveFilePanel("Save your wave", Application.dataPath, DateTime.Now + ".json", "json");
-        using (StreamWriter sw = new StreamWriter(path,true))
+        var bp = new BrowserProperties();
+        bp.filterIndex = 0;
+        bp.filter = "json files (*.json)|*.json";
+        new FileBrowser().SaveFileBrowser(bp, "test", ".json", path =>
         {
-            sw.WriteLine(JsonUtility.ToJson(r));
-        }
+            using (StreamWriter sw = new StreamWriter(path,true))
+            {
+                sw.WriteLine(JsonUtility.ToJson(r));
+            }
+        });
     }
 
     void Update()
@@ -72,6 +78,8 @@ public class EditorManager : MonoBehaviour
             time += Mathf.Sign(Input.mouseScrollDelta.y) / 2;
         if (Input.GetKeyDown(KeyCode.E)) Add();
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S)) Save();
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Transition.TransitionToScene("TitleScreen");
     }
 
     public void ChangeEnemy(int s) {

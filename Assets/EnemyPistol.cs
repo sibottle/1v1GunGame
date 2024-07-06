@@ -6,6 +6,8 @@ public class EnemyPistol : CharacterEntity
 {
     [SerializeField] bool alive = true;
     [SerializeField] float shootTime = 0;
+    [SerializeField] Animator animation;
+    [SerializeField] LineRenderer line = null;
     
     void Awake()
     {
@@ -19,29 +21,30 @@ public class EnemyPistol : CharacterEntity
         if (!alive)
             return;
         sprite.flipX = transform.position.x > PlayerScript.instance.transform.position.x;
+        if (dir != (PlayerScript.instance.transform.position.x < transform.position.x ? -1 : 1)) {
+            shootTime = -1;
+        }
         dir = PlayerScript.instance.transform.position.x < transform.position.x ? -1 : 1;
-        if (Mathf.Abs(transform.position.y - PlayerScript.instance.groundHeight) > 6 && cb.groundState == -1) {
-            if (transform.position.y > PlayerScript.instance.groundHeight) {
-                transform.position += Vector3.down * 0.1f;
-                cb.spd.y -= 0.5f;
-            } else {
-                AudioScript.instance.PlaySound(transform.position,2,1,0.5f);
-                ParticleManager.instance.SpawnParticle(0,transform.position - Vector3.up / 2, Quaternion.identity);
-                cb.groundState = 0;
-                cb.spd.y = 25;
-            }
-        }
-        if (Mathf.Abs(transform.position.x - PlayerScript.instance.transform.position.x) > 6 || cb.groundState != -1) {
+        if (Mathf.Abs(transform.position.x - PlayerScript.instance.transform.position.x) > 5 || cb.groundState != -1) {
             cb.spd.x = PlayerScript.instance.transform.position.x < transform.position.x ? -4 : 4;
-            shootTime = 0;
+            shootTime = -0.2f;
+            line.enabled = false;
         } else {
-            cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,0.25f);
+            cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,5 * Time.deltaTime);
             shootTime += Time.deltaTime;
+            Vector3 direction = (PlayerScript.instance.transform.position - transform.position).normalized;
+            line.enabled = shootTime > 0;
+            line.endWidth = Mathf.Max(0,shootTime/1.2f*0.1f);
+            line.SetPosition(0,transform.position);
+            line.SetPosition(1,direction*Mathf.Min(8,Vector3.Distance(transform.position,PlayerScript.instance.transform.position)) + transform.position);
             if (shootTime > 1.2f) {
-                Instantiate(Resources.Load("Prefab/BulletEnemyPistol") as GameObject,transform.position,Quaternion.identity).GetComponent<RaycastBulletScript>().Shoot((PlayerScript.instance.transform.position - transform.position).normalized);
+                Instantiate(Resources.Load("Prefab/BulletEnemyPistol") as GameObject,transform.position,Quaternion.identity).GetComponent<RaycastBulletScript>().Shoot(direction);
                 shootTime = 0;
+                animation.SetTrigger("shoot");
             }
         }
+        animation.SetFloat("speed", Mathf.Abs(cb.spd.x));
+        if (!sprite.isVisible && !cb.boxCollider.enabled) Destroy(gameObject);
     }
 
     public void Harm(float damage, Vector3 source) {
@@ -52,6 +55,7 @@ public class EnemyPistol : CharacterEntity
     public void Die(float damage, Vector3 source) {
         cb.boxCollider.enabled = false;
         cb.spd = (transform.position - source).normalized * damage / 5;
+        animation.SetTrigger("die");
         if (!sprite.isVisible) Destroy(gameObject);
     }
 }

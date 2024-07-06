@@ -43,22 +43,25 @@ public class PlayerScript : CharacterEntity
         fireCooldown = Mathf.MoveTowards(fireCooldown,0,Time.deltaTime);
         switch (state) {
             case State.normal:
-                if (Input.GetAxisRaw("Horizontal") != 0) {
-                    dir = Input.GetAxisRaw("Horizontal") > 0 ? 1:-1;
-                }
                 if (Input.GetButton("Fire2")) {
-                    if (Input.GetButtonDown("Fire2") || fireCooldown == 0) {
+                    if (fireCooldown == 0) {
                         Instantiate(bullet,transform.position + Vector3.right * gunOffset.x * dir + Vector3.up * gunOffset.y,Quaternion.identity).GetComponent<RaycastBulletScript>().Shoot(Vector2.right * dir,lastShootTime);
                         lastShootTime /= 2;
-                        fireCooldown = 0.2f;
+                        fireCooldown = 0.3f;
+                        animation.SetTrigger("shoot");
                     }
                 }
                 if (cb.groundState == -1) {
                     dashAble = true;
-                    if (Input.GetAxisRaw("Horizontal") != 0)
-                        cb.spd.x = Input.GetAxisRaw("Horizontal") * 8   ;
+                    if (Input.GetAxisRaw("Horizontal") != 0) {
+                        if (dir != Input.GetAxisRaw("Horizontal") || Mathf.Abs(cb.spd.x) < 0.2f) {
+                            cb.spd.x = Input.GetAxisRaw("Horizontal") * 14;
+                            animation.SetTrigger("slide");
+                        }
+                        cb.spd.x = Mathf.MoveTowards(cb.spd.x,Input.GetAxisRaw("Horizontal") * 9,12 * Time.deltaTime);
+                    }
                     else
-                        cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,0.25f);
+                        cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,50 * Time.deltaTime);
                     if (Input.GetButtonDown("Fire1")) {
                         AudioScript.instance.PlaySound(transform.position,4,1);
                         // cb.boxCollider.offset = Vector2.zero;
@@ -69,7 +72,7 @@ public class PlayerScript : CharacterEntity
                     dbAble = true;
                     if (Input.GetButtonDown("Jump")) {
                         animation.SetTrigger("jump");
-                        AudioScript.instance.PlaySound(transform.position,2,1,0.5f);
+                        AudioScript.instance.PlaySound(transform.position,2,1,0.25f);
                         ParticleManager.instance.SpawnParticle(0,transform.position - Vector3.up / 2, Quaternion.identity);
                         cb.groundState = 0;
                         cb.spd.y = 15;
@@ -87,7 +90,7 @@ public class PlayerScript : CharacterEntity
                         if (Input.GetAxisRaw("Horizontal") != 0)
                             cb.spd.x = Input.GetAxisRaw("Horizontal") * 8;
                         else
-                            cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,0.25f);
+                            cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,10 * Time.deltaTime);
                         if (Input.GetButtonDown("Jump")) {
                             AudioScript.instance.PlaySound(transform.position,2,1.5f,0.5f);
                             cb.spd.y = 20;
@@ -103,6 +106,9 @@ public class PlayerScript : CharacterEntity
                         dbAble = false;
                         cb.spd.y = -15;
                     }
+                }
+                if (Input.GetAxisRaw("Horizontal") != 0) {
+                    dir = Input.GetAxisRaw("Horizontal") > 0 ? 1:-1;
                 }
                 break;
             case State.roll:

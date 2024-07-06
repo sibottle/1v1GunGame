@@ -2,21 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Based on script by ANTARES_XXI on Unity Forums:
-// https://forum.unity.com/threads/how-to-create-ghost-or-after-image-on-an-animated-sprite.334079/
-// Modified by TheGabeHD
-
-/// <summary>
-/// Creates fading copies of the sprite displayed by the sprite renderer on this object.
-/// </summary>
 [RequireComponent(typeof(SpriteRenderer))]
-public class AfterImage : MonoBehaviour
+public class AfterImage : MonoBehaviour //잔상 효과
 {
-    [Tooltip("Number of sprites per distance unit.")]
-    [SerializeField] private float rate = 2f;
-    [SerializeField] private float lifeTime = 0.2f;
+    [SerializeField] private float rate = 2f; //잔상 나타나는 속도
+    [SerializeField] private float lifeTime = 0.2f; //잔상 남아있는 시간
 
-    private SpriteRenderer baseRenderer;
+    private SpriteRenderer baseRenderer; //잔상 효과 적용할 스프라이트
     private bool isActive = false;
     private float interval;
     private Vector3 previousPos;
@@ -24,21 +16,19 @@ public class AfterImage : MonoBehaviour
     private void Start()
     {
         baseRenderer = GetComponent<SpriteRenderer>();
-        interval = 1f / rate;
+        interval = 1f / rate; //잔상을 나타네는 간격 설정
     }
 
     private void Update()
-    {
+    {  
+        //간격 밖으로 거리가 나가면 잔상 효과 스폰
         if (isActive && Vector3.Distance(previousPos, transform.position) > interval)
         {
             SpawnTrailPart();
             previousPos = transform.position;
         }
     }
-
-    /// <summary>
-    /// Call this function to start/stop the trail.
-    /// </summary>
+    
     public void Activate(bool shouldActivate)
     {
         isActive = shouldActivate;
@@ -46,6 +36,7 @@ public class AfterImage : MonoBehaviour
             previousPos = transform.position;
     }
 
+    //잔상 소환
     private void SpawnTrailPart()
     {
         GameObject trailPart = new GameObject(gameObject.name + " trail part");
@@ -66,6 +57,7 @@ public class AfterImage : MonoBehaviour
         StartCoroutine(FadeTrailPart(trailPartRenderer));
     }
 
+    //소환된 잔상 lifeTime이랑 같이 계산해 사라지게 함
     private IEnumerator FadeTrailPart(SpriteRenderer trailPartRenderer)
     {
         float fadeSpeed = 1 / lifeTime;

@@ -16,6 +16,6 @@ public class CanvasController : MonoBehaviour
     void Update()
     {
         hp.value = PlayerScript.instance.health;
-        hp.transform.position = Vector3.Lerp(hp.transform.position, PlayerScript.instance.transform.position + Vector3.up * 4f,Time.deltaTime * 50);
+        hp.transform.position = Vector3.Lerp(hp.transform.position, PlayerScript.instance.transform.position + Vector3.up * 3f,Time.deltaTime * 50);
     }
 }

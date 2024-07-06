@@ -32,6 +32,7 @@ public class EnemySniper : CharacterEntity
                 shootTime = 5;
             }
         }
+        if (!sprite.isVisible && !cb.boxCollider.enabled) Destroy(gameObject);
     }
 
     IEnumerator Shoot() {
@@ -57,6 +58,5 @@ public class EnemySniper : CharacterEntity
     public void Die(float damage, Vector3 source) {
         cb.boxCollider.enabled = false;
         cb.spd = (transform.position - source).normalized * damage / 5;
-        if (!sprite.isVisible) Destroy(gameObject);
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.IO;    
+using AnotherFileBrowser.Windows;
 
 public class RoundManager : MonoBehaviour
 {
@@ -28,11 +29,17 @@ public class RoundManager : MonoBehaviour
     [SerializeField] float remainRoundTimer = 10;
 
     void Start() {
-        var path = EditorUtility.OpenFilePanel("Load wave", Application.dataPath, "json");
-        using (StreamReader reader = new StreamReader(path))
+        var bp = new BrowserProperties();
+        bp.filter = "json files (*.txt)|*.json|All Files (*.*)|*.*";
+        bp.filterIndex = 0;
+
+        new FileBrowser().OpenFileBrowser(bp, path =>
         {
-            round = JsonUtility.FromJson<SerializableList<EnemyInfo>>(reader.ReadToEnd()).list;
-        }
+            using (StreamReader reader = new StreamReader(path))
+            {
+                round = JsonUtility.FromJson<SerializableList<EnemyInfo>>(reader.ReadToEnd()).list;
+            }
+        });
     }
 
     // Update is called once per frame
