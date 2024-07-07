@@ -27,6 +27,7 @@ public class PlayerScript : CharacterEntity
     [SerializeField] bool flipSprite;
     [SerializeField] Animator animation;
     [SerializeField] Vector2 gunOffset;
+    float footTimer = 0;
 
     void Awake()
     {
@@ -43,6 +44,7 @@ public class PlayerScript : CharacterEntity
         fireCooldown = Mathf.MoveTowards(fireCooldown,0,Time.deltaTime);
         switch (state) {
             case State.normal:
+                ai.Activate(Mathf.Abs(cb.spd.x) > 8);
                 if (Input.GetButton("Fire2")) {
                     if (fireCooldown == 0) {
                         Instantiate(bullet,transform.position + Vector3.right * gunOffset.x * dir + Vector3.up * gunOffset.y,Quaternion.identity).GetComponent<RaycastBulletScript>().Shoot(Vector2.right * dir,lastShootTime);
@@ -52,23 +54,31 @@ public class PlayerScript : CharacterEntity
                     }
                 }
                 if (cb.groundState == -1) {
+                    footTimer += Mathf.Abs(cb.spd.x);
+                    if (footTimer > 400) {
+                        AudioScript.instance.PlaySound(transform.position,9,Random.Range(0.8f,1.2f),0.5f);
+                        footTimer -= 400;
+                    }
                     dashAble = true;
                     if (Input.GetAxisRaw("Horizontal") != 0) {
-                        if (dir != Input.GetAxisRaw("Horizontal") || Mathf.Abs(cb.spd.x) < 0.2f) {
-                            cb.spd.x = Input.GetAxisRaw("Horizontal") * 14;
-                            animation.SetTrigger("slide");
+                        if (Input.GetButton("Fire1")) {
+                            cb.spd.x = Mathf.MoveTowards(cb.spd.x,Input.GetAxisRaw("Horizontal") * 5,120 * Time.deltaTime);
+                        } else{
+                            if (dir != Input.GetAxisRaw("Horizontal") || Mathf.Abs(cb.spd.x) < 0.2f) {
+                                AudioScript.instance.PlaySound(transform.position,8,Random.Range(0.9f,1.1f),0.4f);
+                                cb.spd.x = Input.GetAxisRaw("Horizontal") * 14;
+                                animation.SetTrigger("slide");
+                            }
+                            cb.spd.x = Mathf.MoveTowards(cb.spd.x,Input.GetAxisRaw("Horizontal") * 9,12 * Time.deltaTime);
                         }
-                        cb.spd.x = Mathf.MoveTowards(cb.spd.x,Input.GetAxisRaw("Horizontal") * 9,12 * Time.deltaTime);
                     }
                     else
                         cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,50 * Time.deltaTime);
-                    if (Input.GetButtonDown("Fire1")) {
-                        AudioScript.instance.PlaySound(transform.position,4,1);
-                        // cb.boxCollider.offset = Vector2.zero;
-                        // cb.boxCollider.size = Vector2.one;
-                        state = State.roll;
-                        ai.Activate(true);  
-                    }
+                    // if (Input.GetButtonDown("Fire1")) {
+                    //     AudioScript.instance.PlaySound(transform.position,4,1);
+                    //     state = State.roll;
+                    //     ai.Activate(true);  
+                    // }
                     dbAble = true;
                     if (Input.GetButtonDown("Jump")) {
                         animation.SetTrigger("jump");
@@ -78,14 +88,14 @@ public class PlayerScript : CharacterEntity
                         cb.spd.y = 15;
                     }
                 } else {
-                    if (Input.GetButtonDown("Fire1") && dashAble) {
-                        dashAble = false;
-                        AudioScript.instance.PlaySound(transform.position,5,1);
-                        cb.groundCheck = false;
-                        state = State.airroll;
-                        dbAble = false;
-                        ai.Activate(true);
-                    }
+                    // if (Input.GetButtonDown("Fire1") && dashAble) {
+                    //     dashAble = false;
+                    //     AudioScript.instance.PlaySound(transform.position,5,1);
+                    //     cb.groundCheck = false;
+                    //     state = State.airroll;
+                    //     dbAble = false;
+                    //     ai.Activate(true);
+                    // }
                     if (dbAble) {
                         if (Input.GetAxisRaw("Horizontal") != 0)
                             cb.spd.x = Input.GetAxisRaw("Horizontal") * 8;
