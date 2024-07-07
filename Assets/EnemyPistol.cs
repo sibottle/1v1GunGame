@@ -30,14 +30,14 @@ public class EnemyPistol : CharacterEntity
             shootTime = -0.2f;
             line.enabled = false;
         } else {
-            cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,5 * Time.deltaTime);
+            cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,20 * Time.deltaTime);
             shootTime += Time.deltaTime;
             Vector3 direction = (PlayerScript.instance.transform.position - transform.position).normalized;
             line.enabled = shootTime > 0;
-            line.endWidth = Mathf.Max(0,shootTime/1.2f*0.1f);
+            line.endWidth = Mathf.Max(0,shootTime/1f*0.5f);
             line.SetPosition(0,transform.position);
             line.SetPosition(1,direction*Mathf.Min(8,Vector3.Distance(transform.position,PlayerScript.instance.transform.position)) + transform.position);
-            if (shootTime > 1.2f) {
+            if (shootTime > 1f) {
                 Instantiate(Resources.Load("Prefab/BulletEnemyPistol") as GameObject,transform.position,Quaternion.identity).GetComponent<RaycastBulletScript>().Shoot(direction);
                 shootTime = 0;
                 animation.SetTrigger("shoot");

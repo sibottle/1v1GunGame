@@ -381,7 +381,7 @@ Transform:
   m_GameObject: {fileID: 524208694}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.88103384, y: -0.055082485, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -801,12 +801,14 @@ MonoBehaviour:
   round: []
   time: 0
   selectedEnemy: 
-  currentRound: 0
+  currentRound: 1
   spritePreview: {fileID: 524208695}
   mousePosition: {x: 0, y: 0, z: 0}
   enemyInfoList:
   - {fileID: 11400000, guid: 30314d47348e493498538b15806913b8, type: 2}
   - {fileID: 11400000, guid: 78b5eb7a7f90e8a4fb45a38332f7f0a4, type: 2}
+  - {fileID: 11400000, guid: 28e64af39109bb94fafffd8837cfa854, type: 2}
+  - {fileID: 11400000, guid: 1399681c3b05dff47aabdef1b03e510c, type: 2}
   editEnemy: {fileID: 1790752018}
 --- !u!4 &952566549
 Transform:

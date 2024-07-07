@@ -29,13 +29,10 @@ public class EnemyClaw : CharacterEntity
         switch (curState){
             case States.Walking:
                 sprite.flipX = transform.position.x > PlayerScript.instance.transform.position.x;
-                if (dir != (PlayerScript.instance.transform.position.x < transform.position.x ? -1 : 1)) {
-                    shootTime = -1;
-                }
                 dir = PlayerScript.instance.transform.position.x < transform.position.x ? -1 : 1;
 
                 if (Mathf.Abs(transform.position.x - PlayerScript.instance.transform.position.x) > 3 || cb.groundState != -1) {
-                    cb.spd.x = PlayerScript.instance.transform.position.x < transform.position.x ? -4 : 4;
+                    cb.spd.x = PlayerScript.instance.transform.position.x < transform.position.x ? -2 : 2;
                     shootTime = 0f;
                     line.enabled = false;
                 } else {
@@ -47,17 +44,23 @@ public class EnemyClaw : CharacterEntity
                 break;
             case States.Preparing:
                 shootTime += Time.deltaTime;
-                line.endWidth = Mathf.Max(0,shootTime/1.5f*0.8f);
+                line.endWidth = Mathf.Max(0,shootTime/0.9f*0.8f);
                 line.SetPosition(0,transform.position);
                 line.SetPosition(1,transform.position + Vector3.right * dir * 4);
-                if (shootTime > 1.5f) {
+                if (shootTime > 0.9f) {
+                    foreach (CharacterEntity i in GameObject.FindObjectsOfType<CharacterEntity>())
+                    {
+                        Bounds b = new Bounds(transform.position + Vector3.right * dir * 4, new Vector2(4,2));
+                        if (b.Contains(i.transform.position))
+                            i.Harm(30, transform.position);
+                    }
                     RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right * dir, 4, 3);
                     if (Physics2D.Raycast(transform.position, Vector2.right * dir, 4, 3))
                         transform.position = hit.point;
                     else
                         transform.position += Vector3.right * dir * 4;
                     curState = States.Cooldown;
-                    shootTime = 1;
+                    shootTime = 0.9f;
                     animation.SetTrigger("attack");
                 }
                 break;

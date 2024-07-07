@@ -42,9 +42,10 @@ public class PlayerScript : CharacterEntity
         groundHeight =  Physics2D.Raycast(transform.position - Vector3.up / 2,Vector3.down).point.y;
         lastShootTime = Mathf.MoveTowards(lastShootTime,1,Time.deltaTime);
         fireCooldown = Mathf.MoveTowards(fireCooldown,0,Time.deltaTime);
+        if (ai.isActive != (Mathf.Abs(cb.spd.x) >= 8))
+            ai.Activate(Mathf.Abs(cb.spd.x) >= 8);
         switch (state) {
             case State.normal:
-                ai.Activate(Mathf.Abs(cb.spd.x) > 8);
                 if (Input.GetButton("Fire2")) {
                     if (fireCooldown == 0) {
                         Instantiate(bullet,transform.position + Vector3.right * gunOffset.x * dir + Vector3.up * gunOffset.y,Quaternion.identity).GetComponent<RaycastBulletScript>().Shoot(Vector2.right * dir,lastShootTime);

@@ -45,7 +45,7 @@ public class RoundManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (queued > 0) remainRoundTimer = 5;
+        if (queued > 0) remainRoundTimer = 3;
         else remainRoundTimer = Mathf.MoveTowards(remainRoundTimer,0,Time.deltaTime);
         if (remainRoundTimer == 0) NextRound();
     }

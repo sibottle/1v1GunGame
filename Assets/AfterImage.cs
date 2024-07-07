@@ -9,7 +9,7 @@ public class AfterImage : MonoBehaviour //잔상 효과
     [SerializeField] private float lifeTime = 0.2f; //잔상 남아있는 시간
 
     private SpriteRenderer baseRenderer; //잔상 효과 적용할 스프라이트
-    private bool isActive = false;
+    public bool isActive = false;
     private float interval;
     private Vector3 previousPos;
 
@@ -61,6 +61,8 @@ public class AfterImage : MonoBehaviour //잔상 효과
     private IEnumerator FadeTrailPart(SpriteRenderer trailPartRenderer)
     {
         float fadeSpeed = 1 / lifeTime;
+
+        trailPartRenderer.color = new Color(1,1,1,0.5f);
 
         while(trailPartRenderer.color.a > 0)
         {
