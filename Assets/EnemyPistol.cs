@@ -50,6 +50,7 @@ public class EnemyPistol : CharacterEntity
     public void Harm(float damage, Vector3 source) {
         health -= damage;
         cb.spd = (transform.position - source).normalized * damage / 5;
+        HurtText(damage.ToString());
     }
 
     public void Die(float damage, Vector3 source) {

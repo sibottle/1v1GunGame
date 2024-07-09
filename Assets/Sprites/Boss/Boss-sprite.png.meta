@@ -521,6 +521,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Boss-sprite_19
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 0
+        width: 228
+        height: 188
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d91663a58d7ea346b6f047c2466a3a1
+      internalID: -1877442473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -543,6 +564,7 @@ TextureImporter:
       Boss-sprite_16: -2094646646
       Boss-sprite_17: -713590709
       Boss-sprite_18: -1340550715
+      Boss-sprite_19: -1877442473
       Boss-sprite_2: -1772411977
       Boss-sprite_3: 793585059
       Boss-sprite_4: -1402051118

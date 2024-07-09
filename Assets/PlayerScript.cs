@@ -52,6 +52,7 @@ public class PlayerScript : CharacterEntity
                         lastShootTime /= 2;
                         fireCooldown = 0.3f;
                         animation.SetTrigger("shoot");
+                        CameraShake.instance.shakeTime += 0.3f;
                     }
                 }
                 if (cb.groundState == -1) {
@@ -164,11 +165,13 @@ public class PlayerScript : CharacterEntity
     public void Harm(float damage, Vector3 source) {
         health -= damage;
         cb.spd = (transform.position - source).normalized * damage / 5;
+        CameraShake.instance.shakeTime += 0.5f;
     }
 
     public void Die(float damage, Vector3 source) {
         cb.boxCollider.enabled = false;
         cb.spd = (transform.position - source).normalized * damage / 5;
         if (!sprite.isVisible) Destroy(gameObject,0.5f);
+        CameraShake.instance.shakeTime += 1f;
     }
 }

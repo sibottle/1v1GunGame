@@ -6,8 +6,9 @@ public class EnemyBoss : CharacterEntity
 {
     [SerializeField] bool alive = true;
     [SerializeField] float shootTime = 0;
-    float invinciTimer = 0;
+    [SerializeField] float invinciTimer = 0;
     [SerializeField] LineRenderer line = null;
+    [SerializeField] Animator animation;
     enum States{
         Shooting,
         Dodging,
@@ -35,14 +36,14 @@ public class EnemyBoss : CharacterEntity
                     cb.spd.x = PlayerScript.instance.transform.position.x < transform.position.x ? -3 : 3;
                     shootTime = 0.5f;
                 } else {
-                    cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,0.25f);
+                    cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,Time.deltaTime * 20);
                     shootTime -= Time.deltaTime;
-                    if (shootTime <= 0) {
+                    if (shootTime <= 0 && !shooting) {
                         shootTime = 5;
                         StartCoroutine(Shoot());
                     }
                 }
-                if (damaged >= 80 || invinciTimer > 8){
+                if (damaged >= 150 || invinciTimer > 8 && !shooting){
                     damaged = 0;
                     Teleport();
                     curState = (Random.value > 0.5f ? States.Dodging : States.Casting);
@@ -50,35 +51,43 @@ public class EnemyBoss : CharacterEntity
                 }
                 break;
             case States.Dodging:
-                damaged = 0;
                 invinciTimer = Mathf.MoveTowards(invinciTimer,0,Time.deltaTime);
                 shootTime += Time.deltaTime;
                 if (shootTime > 4)
-                    curState = (Random.value > 0.5f ? States.Shooting : States.Casting);
+                    damaged = 0;
+                    if (Random.Range(0,1) == 0) 
+                    {
+                        invinciTimer = 0;
+                        curState = States.Shooting;
+                    } else curState = States.Casting;
                 break;
+                cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,Time.deltaTime * 50);
             case States.Casting:
-                invinciTimer = Mathf.MoveTowards(invinciTimer,0,Time.deltaTime * 0.8f);
+                invinciTimer = Mathf.MoveTowards(invinciTimer,0,Time.deltaTime * 0.6f);
                 shootTime += Time.deltaTime;
-                if (shootTime > 0.6f) {
+                if (shootTime > 1f) {
+                    animation.SetTrigger("cast");
                     shootTime = 0;
-                    Instantiate(Resources.Load("Prefab/BossSword") as GameObject,transform.position,Quaternion.identity).GetComponent<BossProjectile>().speed = dir * 5;
+                    Instantiate(Resources.Load("Prefab/BossSword") as GameObject,transform.position + Vector3.up * 2,Quaternion.identity).GetComponent<BossProjectile>().speed = (PlayerScript.instance.transform.position - transform.position + Vector3.up * -3).normalized * 6;
+                    Instantiate(Resources.Load("Prefab/BossSword") as GameObject,transform.position,Quaternion.identity).GetComponent<BossProjectile>().speed = (PlayerScript.instance.transform.position - transform.position).normalized * 6;
                 }
                 if (damaged > 100) {
                     Teleport();
                     curState = States.Dodging;
                 }
+                cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,Time.deltaTime * 20);
                 break;
         }
+        animation.SetFloat("speed",Mathf.Abs(cb.spd.x));
         if (!sprite.isVisible && !cb.boxCollider.enabled) Destroy(gameObject);
     }
 
     void Teleport() {
-        int direction = Random.Range(0, 1) * 2 - 1;
-        RaycastHit2D hit = Physics2D.Raycast(PlayerScript.instance.transform.position, Vector2.right * direction, 5, 3);
-        if (Physics2D.Raycast(PlayerScript.instance.transform.position, Vector2.right * direction, 5, 3))
-            transform.position = hit.point;
-        else
-            transform.position = PlayerScript.instance.transform.position + Vector3.right * direction * 5;
+        invinciTimer = 0.7f;
+        int direction = (transform.position.x > PlayerScript.instance.transform.position.x  ?-1:1);
+        Debug.Log(direction);
+        transform.position = new Vector3(Mathf.Clamp(PlayerScript.instance.transform.position.x + direction * 5,-6,6),transform.position.y,transform.position.z);
+        
     }
 
     bool shooting = false;
@@ -95,6 +104,7 @@ public class EnemyBoss : CharacterEntity
             line.endWidth = (1f-i)/2;
             yield return null;
         }
+        animation.SetTrigger("shoot");
         Instantiate(Resources.Load("Prefab/BulletEnemySniper") as GameObject,transform.position,Quaternion.identity).GetComponent<RaycastBulletScript>().Shoot(direction);
         shootTime = 0.5f;
         shooting = false;
@@ -102,13 +112,15 @@ public class EnemyBoss : CharacterEntity
     }
 
     public void Harm(float damage, Vector3 source) {
-        if (invinciTimer <= 0 && curState != States.Shooting)
-            invinciTimer = 0.8f;
+        if (invinciTimer <= 0 && curState != States.Shooting) {
+            HurtText("MISS");
             Teleport();
-            return;
-        health -= damage;
-        damaged += damage;
-        cb.spd = (transform.position - source).normalized * damage / 5;
+        } else {
+            health -= damage;
+            damaged += damage;
+            cb.spd = (transform.position - source).normalized * damage / 5;
+            HurtText(damage.ToString());
+        }
     }
 
     public void Die(float damage, Vector3 source) {

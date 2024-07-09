@@ -4,19 +4,35 @@ using UnityEngine;
 
 public class BossProjectile : MonoBehaviour
 {
-    public int speed = 1;
+    public Vector3 speed;
     [SerializeField] SpriteRenderer sprite;
+    Collider2D collider2D;
+    
+    IEnumerator Start() {
+        collider2D = GetComponent<Collider2D>();
+        yield return new WaitForSeconds(5);
+        GameObject.Destroy(gameObject);
+    }
 
     // Update is called once per frame
     void Update()
     {
-        transform.position += Vector3.right * speed * Time.deltaTime;
-        sprite.flipX = speed < 0;
+        transform.position += speed * Time.deltaTime;
+        transform.right = speed;
     }
 
-    void OnTriggerStay(Collider other) {
+    void OnTriggerStay2D(Collider2D other) {
+        if (other.gameObject.tag == "Boss")
+            return;
         if (other.gameObject.GetComponent<CharacterEntity>()) {
-            other.gameObject.GetComponent<CharacterEntity>().Harm(2, transform.position);
+            other.gameObject.GetComponent<CharacterEntity>().Harm(8, transform.position);
+            StartCoroutine(Cooldown());
         }
+    }
+
+    IEnumerator Cooldown() {
+        collider2D.enabled = false;
+        yield return new WaitForSeconds(0.4f);
+        collider2D.enabled = true;
     }
 }

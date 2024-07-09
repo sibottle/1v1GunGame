@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 [RequireComponent(typeof(Camera))]
 public class CameraShake : MonoBehaviour
@@ -8,6 +9,7 @@ public class CameraShake : MonoBehaviour
     public static CameraShake instance;
     public float power = 1;
     public float shakeTime = 0;
+    public CinemachineCameraOffset cco;
 
     void Awake(){
         instance = this;

@@ -12,7 +12,6 @@ public class CharacterEntity : MonoBehaviour
     
     public void Harm(float _health, Vector3 source) {
         _health = Mathf.Ceil(_health);
-        Instantiate(Resources.Load("Prefab/DamageText") as GameObject, transform.position, Quaternion.identity).GetComponent<DamageTextScript>().Init(_health);
         if (_health > health) {
             Die(_health,source);
             return;
@@ -20,6 +19,10 @@ public class CharacterEntity : MonoBehaviour
         var loadingMethod = this.GetType().GetMethod("Harm");
         var arguments = new object[] {_health,source};
         loadingMethod.Invoke(this,arguments);
+    }
+
+    public void HurtText(string _health) {
+        Instantiate(Resources.Load("Prefab/DamageText") as GameObject, transform.position, Quaternion.identity).GetComponent<DamageTextScript>().Init(_health);
     }
     
     public void Die(float _health, Vector3 source) {
