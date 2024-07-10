@@ -166,6 +166,7 @@ public class PlayerScript : CharacterEntity
         health -= damage;
         cb.spd = (transform.position - source).normalized * damage / 5;
         CameraShake.instance.shakeTime += 0.5f;
+        AudioScript.instance.PlaySound(transform.position,11,Random.Range(0.8f,1.2f),0.7f);
     }
 
     public void Die(float damage, Vector3 source) {

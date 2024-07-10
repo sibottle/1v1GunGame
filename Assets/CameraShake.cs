@@ -8,6 +8,7 @@ public class CameraShake : MonoBehaviour
 {
     public static CameraShake instance;
     public float power = 1;
+    public float shakeSpeed = 10;
     public float shakeTime = 0;
     public CinemachineCameraOffset cco;
 
@@ -16,7 +17,7 @@ public class CameraShake : MonoBehaviour
     }
     void Update()
     {
-        shakeTime = Mathf.MoveTowards(shakeTime, 0, Time.deltaTime);
+        shakeTime = Mathf.Lerp(shakeTime, 0, Time.deltaTime * shakeSpeed);
         transform.eulerAngles = new Vector3(Random.Range(-1f,1f) * shakeTime,Random.Range(-1f,1f) * shakeTime,Random.Range(-1f,1f) * shakeTime);
     }
 }

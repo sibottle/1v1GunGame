@@ -68,6 +68,7 @@ public class EnemyBoss : CharacterEntity
                 if (shootTime > 1f) {
                     animation.SetTrigger("cast");
                     shootTime = 0;
+                    AudioScript.instance.PlaySound(transform.position,10,Random.Range(0.8f,1.2f),0.8f);
                     Instantiate(Resources.Load("Prefab/BossSword") as GameObject,transform.position + Vector3.up * 2,Quaternion.identity).GetComponent<BossProjectile>().speed = (PlayerScript.instance.transform.position - transform.position + Vector3.up * -3).normalized * 6;
                     Instantiate(Resources.Load("Prefab/BossSword") as GameObject,transform.position,Quaternion.identity).GetComponent<BossProjectile>().speed = (PlayerScript.instance.transform.position - transform.position).normalized * 6;
                 }
@@ -126,5 +127,6 @@ public class EnemyBoss : CharacterEntity
     public void Die(float damage, Vector3 source) {
         cb.boxCollider.enabled = false;
         cb.spd = (transform.position - source).normalized * damage / 5;
+        RoundManager.instance.Invoke("EndGame()",1);
     }
 }

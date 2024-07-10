@@ -28,18 +28,29 @@ public class RoundManager : MonoBehaviour
 
     [SerializeField] float remainRoundTimer = 10;
 
-    void Start() {
-        var bp = new BrowserProperties();
-        bp.filter = "json files (*.txt)|*.json|All Files (*.*)|*.*";
-        bp.filterIndex = 0;
+    public static RoundManager instance;
 
-        new FileBrowser().OpenFileBrowser(bp, path =>
-        {
-            using (StreamReader reader = new StreamReader(path))
-            {
-                round = JsonUtility.FromJson<SerializableList<EnemyInfo>>(reader.ReadToEnd()).list;
-            }
-        });
+    public void EndGame() {
+        Transition.TransitionToScene("ClearScreen");
+    }
+
+    void Start() {
+        instance = this;
+
+        TextAsset file = Resources.Load<TextAsset>("Level/1");
+        round = JsonUtility.FromJson<SerializableList<EnemyInfo>>(file.text).list;
+
+        // var bp = new BrowserProperties();
+        // bp.filter = "json files (*.txt)|*.json|All Files (*.*)|*.*";
+        // bp.filterIndex = 0;
+
+        // new FileBrowser().OpenFileBrowser(bp, path =>
+        // {
+        //     using (StreamReader reader = new StreamReader(path))
+        //     {
+        //         round = JsonUtility.FromJson<SerializableList<EnemyInfo>>(reader.ReadToEnd()).list;
+        //     }
+        // });
     }
 
     // Update is called once per frame
