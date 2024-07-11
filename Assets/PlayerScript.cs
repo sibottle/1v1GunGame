@@ -56,10 +56,10 @@ public class PlayerScript : CharacterEntity
                     }
                 }
                 if (cb.groundState == -1) {
-                    footTimer += Mathf.Abs(cb.spd.x);
-                    if (footTimer > 400) {
-                        AudioScript.instance.PlaySound(transform.position,9,Random.Range(0.8f,1.2f),0.5f);
-                        footTimer -= 400;
+                    footTimer += Mathf.Abs(cb.spd.x) * Time.deltaTime;
+                    if (footTimer > 1.5f) {
+                        AudioScript.instance.PlaySound(transform.position,9,Random.Range(0.8f,1.2f),0.7f);
+                        footTimer -= 1.5f;
                     }
                     dashAble = true;
                     if (Input.GetAxisRaw("Horizontal") != 0) {
@@ -174,5 +174,6 @@ public class PlayerScript : CharacterEntity
         cb.spd = (transform.position - source).normalized * damage / 5;
         if (!sprite.isVisible) Destroy(gameObject,0.5f);
         CameraShake.instance.shakeTime += 1f;
+        Transition.TransitionToScene("TitleScreen");
     }
 }

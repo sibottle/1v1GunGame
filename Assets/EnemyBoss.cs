@@ -34,7 +34,7 @@ public class EnemyBoss : CharacterEntity
                 invinciTimer += Time.deltaTime;
                 if (Mathf.Abs(transform.position.x - PlayerScript.instance.transform.position.x) > 10 || cb.groundState != -1) {
                     cb.spd.x = PlayerScript.instance.transform.position.x < transform.position.x ? -3 : 3;
-                    shootTime = 0.5f;
+                    shootTime = 0.6f;
                 } else {
                     cb.spd.x = Mathf.MoveTowards(cb.spd.x,0,Time.deltaTime * 20);
                     shootTime -= Time.deltaTime;
@@ -65,7 +65,7 @@ public class EnemyBoss : CharacterEntity
             case States.Casting:
                 invinciTimer = Mathf.MoveTowards(invinciTimer,0,Time.deltaTime * 0.6f);
                 shootTime += Time.deltaTime;
-                if (shootTime > 1f) {
+                if (shootTime > 1.2f) {
                     animation.SetTrigger("cast");
                     shootTime = 0;
                     AudioScript.instance.PlaySound(transform.position,10,Random.Range(0.8f,1.2f),0.8f);

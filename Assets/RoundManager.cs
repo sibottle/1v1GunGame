@@ -30,11 +30,14 @@ public class RoundManager : MonoBehaviour
 
     public static RoundManager instance;
 
+    bool stop;
+
     public void EndGame() {
         Transition.TransitionToScene("ClearScreen");
     }
 
     void Start() {
+        Debug.Log("Tarted");
         instance = this;
 
         TextAsset file = Resources.Load<TextAsset>("Level/1");
@@ -62,6 +65,8 @@ public class RoundManager : MonoBehaviour
     }
 
     void NextRound() {
+        if (stop) return;
+        Debug.Log("Round" + currentRound);
         currentRound++;
         int count = 0;
         foreach (EnemyInfo e in round) {
@@ -70,7 +75,7 @@ public class RoundManager : MonoBehaviour
                 count++;
             }
         }
-        if (count <= 0) Application.Quit();
+        if (count <= 0) stop = true;
     }
 
     IEnumerator QueueToSpawn(EnemyInfo e) {
